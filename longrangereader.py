@@ -1,12 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+#############################################################################
+# Long Range Reader Wiegand Decoder
+# By: Dennis Linuz <dennismald@gmail.com>
+#
+# Borrowed example code from: http://abyz.co.uk/rpi/pigpio/examples.html
+#
+#############################################################################
 
 import pigpio
 
 class decoder:
-    
-
     def __init__(self, pi, gpio_0, gpio_1, callback, bit_timeout=5):
-
         """
         Instantiate with the pi, gpio for 0 (green wire), the gpio for 1
         (white wire), the callback function, and the bit timeout in
@@ -35,13 +39,11 @@ class decoder:
         self.cb_1 = self.pi.callback(gpio_1, pigpio.FALLING_EDGE, self._cb)
 
     def _cb(self, gpio, level, tick):
-
         """
         Accumulate bits until both gpios 0 and 1 timeout.
         """
 
         if level < pigpio.TIMEOUT:
-
             if self.in_code == False:
                 self.bits = 1
                 self.num = 0
@@ -61,14 +63,11 @@ class decoder:
                 self.num = self.num | 1
 
         else:
-
             if self.in_code:
-
                 if gpio == self.gpio_0:
                     self.code_timeout = self.code_timeout | 1  # timeout gpio 0
                 else:
                     self.code_timeout = self.code_timeout | 2  # timeout gpio 1
-
                 if self.code_timeout == 3:  # both gpios timed out
                     self.pi.set_watchdog(self.gpio_0, 0)
                     self.pi.set_watchdog(self.gpio_1, 0)
@@ -76,7 +75,6 @@ class decoder:
                     self.callback(self.bits, self.num)
 
     def cancel(self):
-
         """
         Cancel the Wiegand decoder.
         """
@@ -86,7 +84,6 @@ class decoder:
 
 
 if __name__ == "__main__":
-
     import time
     import pigpio
     import longrangereader
@@ -135,7 +132,7 @@ if __name__ == "__main__":
             csvwriter = csv.writer(csvfile, lineterminator='\n')
             csvwriter.writerow(
                 [id_num, bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac])
-	os.system("sync")
+        os.system("sync")
         print "[*] Added to cards.csv"
 
     def decodeWiegandData(bits, wiegand):
@@ -165,12 +162,12 @@ if __name__ == "__main__":
         bits = str(bits)
         wiegand_binary = format(value, '0' + bits + 'b')
         fac_code, card_num, card_num_no_fac, hidHeader = decodeWiegandData(bits, wiegand_binary)
-	wiegand_binary = hidHeader + wiegand_binary
+        wiegand_binary = hidHeader + wiegand_binary
         wiegand_hex = "%016X" % int(wiegand_binary, 2)
         enc_hex = "FFFFFFFFFFFFFFFF".upper()  # FIXME
         addCardsToCSV(bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac)
 
-	print "HID HEADER: " + hidHeader
+        print "HID HEADER: " + hidHeader
         print "Bit Length: " + bits
         print "Facility Code: " + fac_code
         print "Card Number: " + card_num
@@ -178,12 +175,12 @@ if __name__ == "__main__":
         print "Wiegand Data: " + wiegand_binary
         print "Wiegand Hex Data: " + wiegand_hex
         print "iCLASS Standard Encrypted Hex Data: " + enc_hex
-	cmdProxmark(wiegand_hex)
+        cmdProxmark(wiegand_hex)
 
     pi = pigpio.pi()
     w = longrangereader.decoder(pi, 14, 15, callback)
     while True:
-	raw_input()
+        raw_input()
     #time.sleep(300)
     w.cancel()
     pi.stop()

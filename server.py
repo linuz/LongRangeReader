@@ -1,3 +1,10 @@
+#!/usr/bin/python
+#############################################################################
+# Long Range Reader Web/WebSocket Server
+# By: Dennis Linuz <dennismald@gmail.com>
+#
+#############################################################################
+
 import tornado.websocket
 import tornado.httpserver
 import tornado.ioloop
