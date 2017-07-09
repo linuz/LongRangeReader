@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #############################################################################
-# Long Range Reader Wiegand Decoder
+# Long Range Reader Wiegand Listener/Decoder
 # By: Dennis Linuz <dennismald@gmail.com>
 #
 #
@@ -96,6 +96,7 @@ if __name__ == "__main__":
     id_num = 0
 
     # Command for using expect script on sattilite device to automagically write cloned RFID cards
+    # Currently broken, will hang up the script, not allowing for more than 2 cards to be processed at any one time
     def cmdProxmark(wiegand_hex):
         os.system('ssh -t dennis@192.168.3.10 "/home/dennis/proxmark.exp /dev/ttyACM0 lf ' + wiegand_hex + '"')
 
@@ -173,15 +174,15 @@ if __name__ == "__main__":
         addCardsToCSV(bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac)
 
         # Debug output to console
-        print "HID HEADER: " + hidHeader
         print "Bit Length: " + bits
         print "Facility Code: " + fac_code
+        
         print "Card Number: " + card_num
         print "Card Number without Facility Code: " + card_num_no_fac
         print "Wiegand Data: " + wiegand_binary
         print "Wiegand Hex Data: " + wiegand_hex
         print "iCLASS Standard Encrypted Hex Data: " + enc_hex
-        cmdProxmark(wiegand_hex)
+ #      cmdProxmark(wiegand_hex)
 
     # Initialize pigpio and start the wiegand decoder, listening for Data0 and Data1 on pins 14 and 15, respectively
     pi = pigpio.pi()
@@ -192,3 +193,4 @@ if __name__ == "__main__":
         raw_input()
     w.cancel()
     pi.stop()
+    
