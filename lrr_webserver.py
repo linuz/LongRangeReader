@@ -145,7 +145,7 @@ class CredentialHandler(tornado.websocket.WebSocketHandler):
         with open(CSV_FILE) as cards_file:
             next(cards_file)
             for line in cards_file:
-                print "Sending message!"
+                #print "Sending message!"
                 self.write_message(line)
 
     def on_message(self, message):

@@ -86,7 +86,7 @@ class decoder:
 if __name__ == "__main__":
     import time
     import pigpio
-    import longrangereader
+    import lrr_wiegand_listener
     import os
     import csv
 
@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     # Initialize pigpio and start the wiegand decoder, listening for Data0 and Data1 on pins 14 and 15, respectively
     pi = pigpio.pi()
-    w = longrangereader.decoder(pi, 14, 15, callback)
+    w = lrr_wiegand_listener.decoder(pi, 14, 15, callback)
     
     # Keep the script running until it is manually stopped with Control+C or killed
     while True:
