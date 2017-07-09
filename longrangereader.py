@@ -3,12 +3,12 @@
 # Long Range Reader Wiegand Decoder
 # By: Dennis Linuz <dennismald@gmail.com>
 #
-# Borrowed example code from: http://abyz.co.uk/rpi/pigpio/examples.html
 #
 #############################################################################
 
 import pigpio
 
+# The magic code to decode wiegand data from the wiegand data lines. Borrowed from http://abyz.co.uk/rpi/pigpio/examples.html
 class decoder:
     def __init__(self, pi, gpio_0, gpio_1, callback, bit_timeout=5):
         """
@@ -95,9 +95,11 @@ if __name__ == "__main__":
     CARDS_CSV_FILE = "cards.csv"
     id_num = 0
 
+    # Command for using expect script on sattilite device to automagically write cloned RFID cards
     def cmdProxmark(wiegand_hex):
         os.system('ssh -t dennis@192.168.3.10 "/home/dennis/proxmark.exp /dev/ttyACM0 lf ' + wiegand_hex + '"')
 
+    # Creates CSV file if one doesn't exist. Will also grab the ID of the last record
     def validateCSV(file):
         global id_num
         if not os.path.exists(file):
@@ -121,6 +123,7 @@ if __name__ == "__main__":
                 id_num = 0
 
 
+    # Add scanned cards to CSV file
     def addCardsToCSV(bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac):
         global id_num
         if fac_code == "-1": fac_code = "NA"
@@ -135,6 +138,7 @@ if __name__ == "__main__":
         os.system("sync")
         print "[*] Added to cards.csv"
 
+    # Decodes the wiegand data based on the bitlength (bits)
     def decodeWiegandData(bits, wiegand):
         if bits == "26":
             head = "0000000100000000001"
@@ -158,15 +162,17 @@ if __name__ == "__main__":
             cn2 = -1
         return str(fc), str(cn), str(cn2), str(head)
 
+    # The actual code that runs every time a card is scanned. Grabs data from, formats it appropriately, and writes to CSV file as well as prints the output to console
     def callback(bits, value):
         bits = str(bits)
         wiegand_binary = format(value, '0' + bits + 'b')
         fac_code, card_num, card_num_no_fac, hidHeader = decodeWiegandData(bits, wiegand_binary)
         wiegand_binary = hidHeader + wiegand_binary
         wiegand_hex = "%016X" % int(wiegand_binary, 2)
-        enc_hex = "FFFFFFFFFFFFFFFF".upper()  # FIXME
+        enc_hex = "FFFFFFFFFFFFFFFF".upper()  # To Implement
         addCardsToCSV(bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac)
 
+        # Debug output to console
         print "HID HEADER: " + hidHeader
         print "Bit Length: " + bits
         print "Facility Code: " + fac_code
@@ -177,10 +183,12 @@ if __name__ == "__main__":
         print "iCLASS Standard Encrypted Hex Data: " + enc_hex
         cmdProxmark(wiegand_hex)
 
+    # Initialize pigpio and start the wiegand decoder, listening for Data0 and Data1 on pins 14 and 15, respectively
     pi = pigpio.pi()
     w = longrangereader.decoder(pi, 14, 15, callback)
+    
+    # Keep the script running until it is manually stopped with Control+C or killed
     while True:
         raw_input()
-    #time.sleep(300)
     w.cancel()
     pi.stop()
