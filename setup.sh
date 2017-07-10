@@ -122,7 +122,7 @@ echo "[*] Installing LongRangeReader code to /opt/LongRangeReader/..."
 mkdir /opt/;
 cd /opt/;
 #git clone git@github.com:linuz/LongRangeReader.git
-mkdir LongRangeReader; cd /opt/LongRangeReader/; wget http://192.168.0.5:8000/lrr_webserver.py; wget http://192.168.0.5:8000/lrr_wiegand_listener.py;
+mkdir LongRangeReader; cd /opt/LongRangeReader/; rm /opt/LongRangeReader/*; wget http://192.168.0.5:8000/lrr_webserver.py; wget http://192.168.0.5:8000/lrr_wiegand_listener.py;
 
 
 echo "[*] Enabling hostapd on startup"
