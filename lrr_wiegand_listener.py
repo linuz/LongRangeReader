@@ -183,7 +183,9 @@ if __name__ == "__main__":
         print "Wiegand Hex Data: " + wiegand_hex
         print "iCLASS Standard Encrypted Hex Data: " + enc_hex
  #      cmdProxmark(wiegand_hex)
-
+    
+    # Create CSV file on boot if one does not exist
+    validateCSV(CARDS_CSV_FILE)
     # Initialize pigpio and start the wiegand decoder, listening for Data0 and Data1 on pins 14 and 15, respectively
     pi = pigpio.pi()
     w = lrr_wiegand_listener.decoder(pi, 14, 15, callback)
