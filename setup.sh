@@ -121,9 +121,7 @@ EOM
 echo "[*] Installing LongRangeReader code to /opt/LongRangeReader/..."
 mkdir /opt/;
 cd /opt/;
-#git clone git@github.com:linuz/LongRangeReader.git
-mkdir LongRangeReader; cd /opt/LongRangeReader/; rm /opt/LongRangeReader/*; wget http://192.168.0.5:8000/lrr_webserver.py; wget http://192.168.0.5:8000/lrr_wiegand_listener.py;
-
+git clone git@github.com:linuz/LongRangeReader.git
 
 echo "[*] Enabling hostapd on startup"
 sudo update-rc.d hostapd defaults
