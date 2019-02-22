@@ -7,6 +7,10 @@
 #############################################################################
 
 import pigpio
+from Crypto.Cipher import DES3
+from binascii import hexlify
+
+iclass_key = "00000000000000000000000000000000"
 
 # The magic code to decode wiegand data from the wiegand data lines. Borrowed from http://abyz.co.uk/rpi/pigpio/examples.html
 class decoder:
@@ -123,6 +127,14 @@ if __name__ == "__main__":
             if not (id_num.isdigit()):
                 id_num = 0
 
+    def encryptIClass(wiegand_hex):
+        if iclass_key ==   "00000000000000000000000000000000":
+            return "FFFFFFFFFFFFFFFF".upper() 
+        else:
+            key = iclass_key.decode("hex")
+            cipher = DES3.new(key, DES3.MODE_ECB)
+            plaintext = wiegand_hex.decode("hex")
+            return hexlify(cipher.encrypt(plaintext)).upper()
 
     # Add scanned cards to CSV file
     def addCardsToCSV(bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac):
@@ -170,7 +182,7 @@ if __name__ == "__main__":
         fac_code, card_num, card_num_no_fac, hidHeader = decodeWiegandData(bits, wiegand_binary)
         wiegand_binary = hidHeader + wiegand_binary
         wiegand_hex = "%016X" % int(wiegand_binary, 2)
-        enc_hex = "FFFFFFFFFFFFFFFF".upper()  # To Implement
+        enc_hex = encryptIClass(wiegand_hex)
         addCardsToCSV(bits, wiegand_binary, wiegand_hex, enc_hex, fac_code, card_num, card_num_no_fac)
 
         # Debug output to console
